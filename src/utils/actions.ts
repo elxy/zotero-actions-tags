@@ -130,7 +130,7 @@ async function applyAction(rule: ActionData, data: ActionDataData) {
   switch (rule.operation) {
     case ActionOperationTypes.add: {
       for (const tag of tags) {
-        item?.addTag(tag, 1);
+        item?.addTag(tag, 0);
       }
       message = `Add tag ${tags.join(",")} to item ${item?.getField("title")}`;
       break;
@@ -149,7 +149,7 @@ async function applyAction(rule: ActionData, data: ActionDataData) {
         if (item?.hasTag(tag)) {
           item?.removeTag(tag);
         } else {
-          item?.addTag(tag, 1);
+          item?.addTag(tag, 0);
         }
       }
       message = `Toggle tag ${tags.join(",")} to item ${item?.getField(
