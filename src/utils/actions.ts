@@ -230,7 +230,7 @@ async function applyAction(action: ActionData, args: ActionArgs) {
       for (const tag of tags) {
         if (!item?.hasTag(tag)) {
           hasChanged || (hasChanged = true);
-          item?.addTag(tag, 1);
+          item?.addTag(tag, 0);
         }
       }
       message = hasChanged
@@ -255,7 +255,7 @@ async function applyAction(action: ActionData, args: ActionArgs) {
         if (item?.hasTag(tag)) {
           item?.removeTag(tag);
         } else {
-          item?.addTag(tag, 1);
+          item?.addTag(tag, 0);
         }
       }
       message = `Toggle tag ${tags.join(",")} to item ${item?.getField(
