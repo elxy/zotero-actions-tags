@@ -8,11 +8,15 @@ export default defineConfig({
   name: pkg.config.addonName,
   id: pkg.config.addonID,
   namespace: pkg.config.addonRef,
-  updateURL: `https://github.com/{{owner}}/{{repo}}/releases/download/release/${
-    pkg.version.includes("-") ? "update-beta.json" : "update.json"
-  }`,
-  xpiDownloadLink:
-    "https://github.com/{{owner}}/{{repo}}/releases/download/v{{version}}/{{xpiName}}.xpi",
+  // Disable auto-update temporarily to prevent upstream overwriting local changes.
+  // Restore to the following once the fix is submitted upstream:
+  //   updateURL: `https://github.com/{{owner}}/{{repo}}/releases/download/release/${
+  //     pkg.version.includes("-") ? "update-beta.json" : "update.json"
+  //   }`,
+  //   xpiDownloadLink:
+  //     "https://github.com/{{owner}}/{{repo}}/releases/download/v{{version}}/{{xpiName}}.xpi",
+  updateURL: "",
+  xpiDownloadLink: "",
 
   server: {
     asProxy: false,
