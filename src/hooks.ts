@@ -88,6 +88,15 @@ function onShutdown(): void {
       ?.remove();
   }
   ztoolkit.unregisterAll();
+
+  // 清除所有待处理的 pendingTags timeout，防止内存泄漏
+  for (const [, record] of addon.data.pendingTags.queue) {
+    if (record.timeoutHandle) {
+      clearTimeout(record.timeoutHandle);
+    }
+  }
+  addon.data.pendingTags.queue.clear();
+
   // Remove addon object
   addon.data.alive = false;
   // @ts-ignore - plugin instance

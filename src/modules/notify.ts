@@ -1,4 +1,5 @@
 import { ActionEventTypes } from "../utils/actions";
+import { recordPendingAction, executePendingActions } from "./dispatch";
 import { recordTabStatus } from "./tabs";
 
 export { initNotifierObserver };
@@ -55,40 +56,26 @@ async function onNotify(
     );
     for (const item of items) {
       if (item.isRegularItem()) {
-        await addon.api.actionManager.dispatchActionByEvent(
-          ActionEventTypes.createItem,
-          {
-            itemID: item.id,
-          },
-        );
+        // 记录到队列，等 modify 事件或超时后再执行
+        // 解决 Connector 保存 session 覆盖标签的竞态问题
+        recordPendingAction(item.id, ActionEventTypes.createItem);
       } else if (item.isAnnotation()) {
-        await addon.api.actionManager.dispatchActionByEvent(
-          ActionEventTypes.createAnnotation,
-          {
-            itemID: item.id,
-          },
-        );
+        recordPendingAction(item.id, ActionEventTypes.createAnnotation);
         const parentItem = Zotero.Items.getTopLevel([item])[0];
-        await addon.api.actionManager.dispatchActionByEvent(
-          ActionEventTypes.appendAnnotation,
-          {
-            itemID: parentItem.id,
-          },
-        );
+        recordPendingAction(parentItem.id, ActionEventTypes.appendAnnotation);
       } else if (item.isNote()) {
-        await addon.api.actionManager.dispatchActionByEvent(
-          ActionEventTypes.createNote,
-          {
-            itemID: item.id,
-          },
-        );
+        recordPendingAction(item.id, ActionEventTypes.createNote);
         const parentItem = Zotero.Items.getTopLevel([item])[0];
-        await addon.api.actionManager.dispatchActionByEvent(
-          ActionEventTypes.appendNote,
-          {
-            itemID: parentItem.id,
-          },
-        );
+        recordPendingAction(parentItem.id, ActionEventTypes.appendNote);
+      }
+    }
+    return;
+  }
+  if (event === "modify" && type === "item") {
+    // 检查是否有待处理的标签操作
+    for (const itemID of ids as number[]) {
+      if (addon.data.pendingTags.queue.has(itemID)) {
+        await executePendingActions(itemID);
       }
     }
     return;

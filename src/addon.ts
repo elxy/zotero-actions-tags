@@ -35,6 +35,16 @@ class Addon {
       selectedKey?: string;
     };
     tabStatus: Map<string, number>;
+    pendingTags: {
+      queue: Map<
+        number,
+        {
+          actionKeys: string[];
+          recordedAt: number;
+          timeoutHandle?: ReturnType<typeof setTimeout>;
+        }
+      >;
+    };
     hint: {
       total: number;
       current: number;
@@ -62,6 +72,9 @@ class Addon {
         cachedKeys: [],
       },
       tabStatus: new Map(),
+      pendingTags: {
+        queue: new Map(),
+      },
       hint: {
         total: 0,
         current: 0,
