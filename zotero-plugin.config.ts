@@ -1,6 +1,5 @@
 import { defineConfig } from "zotero-plugin-scaffold";
 import pkg from "./package.json";
-import { copyFileSync } from "fs";
 
 export default defineConfig({
   source: ["src", "addon"],
@@ -8,15 +7,11 @@ export default defineConfig({
   name: pkg.config.addonName,
   id: pkg.config.addonID,
   namespace: pkg.config.addonRef,
-  // Disable auto-update temporarily to prevent upstream overwriting local changes.
-  // Restore to the following once the fix is submitted upstream:
-  //   updateURL: `https://github.com/{{owner}}/{{repo}}/releases/download/release/${
-  //     pkg.version.includes("-") ? "update-beta.json" : "update.json"
-  //   }`,
-  //   xpiDownloadLink:
-  //     "https://github.com/{{owner}}/{{repo}}/releases/download/v{{version}}/{{xpiName}}.xpi",
-  updateURL: "",
-  xpiDownloadLink: "",
+  updateURL: `https://github.com/elxy/zotero-actions-tags/releases/download/release/${
+    pkg.version.includes("-") ? "update-beta.json" : "update.json"
+  }`,
+  xpiDownloadLink:
+    "https://github.com/elxy/zotero-actions-tags/releases/download/v{{version}}/{{xpiName}}.xpi",
 
   server: {
     asProxy: false,
@@ -43,22 +38,7 @@ export default defineConfig({
         outfile: `build/addon/content/scripts/${pkg.config.addonRef}.js`,
       },
     ],
-    // If you want to checkout update.json into the repository, uncomment the following lines:
-    // makeUpdateJson: {
-    //   hash: false,
-    // },
-    // hooks: {
-    //   "build:makeUpdateJSON": (ctx) => {
-    //     copyFileSync("build/update.json", "update.json");
-    //     copyFileSync("build/update-beta.json", "update-beta.json");
-    //   },
-    // },
   },
-  // release: {
-  //   bumpp: {
-  //     execute: "npm run build",
-  //   },
-  // },
 
   // If you need to see a more detailed build log, uncomment the following line:
   // logLevel: "trace",
